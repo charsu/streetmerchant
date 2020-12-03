@@ -1,13 +1,15 @@
 import {Store} from './store';
 
 export const Argos: Store = {
+    backoffStatusCodes: [403, 429, 503],
 	labels: {
 		inStock: {
-			container: 'button[data-test="add-to-trolley-button-button"',
-			text: ['to trolley']
+			container: '.add-to-trolley-main',
+			text: ['to Trolley']
 		},
-		maxPrice: {
-			container: 'li[itemprop="price"]'
+		outOfStock: {
+			container: '.promo-text,product-detail__email-me-container',
+			text: ['currently unavailable', 'Out of stock']
 		}
 	},
 	links: [
@@ -15,19 +17,25 @@ export const Argos: Store = {
 			brand: 'test:brand',
 			model: 'test:model',
 			series: 'test:series',
-			url: 'https://www.argos.co.uk/product/5718469'
+			url: 'https://www.argos.co.uk/product/1406029'
 		},
 		{
-			brand: 'asus',
+			brand: 'sony',
 			model: 'ps5 console',
 			series: 'sonyps5c',
 			url: 'https://www.argos.co.uk/product/6795199'
 		},
 		{
 			brand: 'sony',
-			model: 'ps5 digital',
-			series: 'sonyps5de',
-			url: 'https://www.argos.co.uk/product/6795151'
+			model: 'ps5 console',
+			series: 'sonyps5c',
+			url: 'https://www.argos.co.uk/product/8349000'
+		},
+		{
+			brand: 'sony',
+			model: 'ps5 console',
+			series: 'sonyps5c',
+			url: 'https://www.argos.co.uk/product/8349024'
 		}
 	],
 	name: 'argos'

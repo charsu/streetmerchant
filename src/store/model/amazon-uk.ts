@@ -14,7 +14,7 @@ export const AmazonUk: Store = {
 			text: ['in stock']
 		},
 		maxPrice: {
-			container: 'span[class*="PriceString"]'
+			container: 'span[class*="priceBlockBuyingPriceString"]'
 		},
 		outOfStock: [
 			{
@@ -31,10 +31,10 @@ export const AmazonUk: Store = {
 		{
 			brand: 'test:brand',
 			cartUrl:
-				'https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B07PW9VBK5&Quantity.1=1',
+				'https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B085G58KWT&Quantity.1=1',
 			model: 'test:model',
 			series: 'test:series',
-			url: 'https://www.amazon.co.uk/dp/B07PW9VBK5/'
+			url: 'https://www.amazon.co.uk/all-new-echo-4th-generation-with-premium-sound-smart-home-hub-and-alexa-charcoal/dp/B085G58KWT'
 		},
 		{
 			brand: 'sony',

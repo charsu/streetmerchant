@@ -81,6 +81,9 @@ import {Walmart} from './walmart';
 import {Wipoid} from './wipoid';
 import {Xbox} from './xbox';
 import {Zotac} from './zotac';
+import {JohnLewis} from './johnlewis';
+import {Argos} from './argos';
+import {Asda} from './asda';
 import {logger} from '../../logger';
 
 export const storeList = new Map([
@@ -96,12 +99,14 @@ export const storeList = new Map([
 	[AmazonNl.name, AmazonNl],
 	[AmazonUk.name, AmazonUk],
 	[AmazonIt.name, AmazonIt],
+	[JohnLewis.name, JohnLewis],
+	[Argos.name, Argos],
+	[Asda.name, Asda],
 	[Amd.name, Amd],
 	[AmdCa.name, AmdCa],
 	[AmdDe.name, AmdDe],
 	[AmdIt.name, AmdIt],
 	[AntOnline.name, AntOnline],
-	[Argos.name, Argos],
 	[Aria.name, Aria],
 	[Arlt.name, Arlt],
 	[Asus.name, Asus],
