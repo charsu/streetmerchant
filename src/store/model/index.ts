@@ -16,7 +16,6 @@ import {AmdCa} from './amd-ca';
 import {AmdDe} from './amd-de';
 import {AmdIt} from './amd-it';
 import {AntOnline} from './antonline';
-import {Argos} from './argos';
 import {Aria} from './aria';
 import {Arlt} from './arlt';
 import {Asus} from './asus';
