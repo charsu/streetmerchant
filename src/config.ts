@@ -174,6 +174,8 @@ const browser = {
 
 const docker = envOrBoolean(process.env.DOCKER);
 
+const raspberrypi = envOrBoolean(process.env.RASPBERRYPI)
+
 const logLevel = envOrString(process.env.LOG_LEVEL, 'info');
 
 const notifications = {
@@ -395,7 +397,8 @@ export const config = {
 	nvidia,
 	page,
 	proxy,
-	store
+	store,
+	raspberrypi
 };
 
 export function setConfig(newConfig: any) {
