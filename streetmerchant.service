@@ -1,0 +1,13 @@
+[Unit]
+Description=StreetMerchant Service
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/pi/streetmerchant
+ExecStart=/usr/bin/npm start start:production
+Restart=on-failure
+User=pi
+Environment=PORT=9099
+
+[Install]
+WantedBy=multi-user.target
