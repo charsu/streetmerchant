@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 WorkingDirectory=/home/pi/streetmerchant
-ExecStart=/usr/bin/npm start start:production
+ExecStart=/home/pi/.nvm/versions/node/v15.3.0/bin/npm run start:production
 Restart=on-failure
 User=pi
 Environment=PORT=9099
