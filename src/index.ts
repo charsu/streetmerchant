@@ -45,7 +45,7 @@ async function main() {
 			height: config.page.height,
 			width: config.page.width
 		},
-		executablePath: config.raspberrypi ? 'chromium-browser' : undefined, 
+		executablePath: config.raspberrypi ? 'chromium-browser' : '', 
 		headless: config.browser.isHeadless
 	});
 

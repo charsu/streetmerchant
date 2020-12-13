@@ -174,7 +174,7 @@ const browser = {
 
 const docker = envOrBoolean(process.env.DOCKER);
 
-const raspberrypi = envOrBoolean(process.env.RASPBERRYPI)
+const raspberrypi = envOrBoolean(process.env.RASPBERRYPI, false)
 
 const logLevel = envOrString(process.env.LOG_LEVEL, 'info');
 

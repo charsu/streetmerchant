@@ -1,22 +1,22 @@
-import {Browser, Page, PageEventObj, Request, Response} from 'puppeteer';
-import {Link, Store, getStores} from './model';
-import {Print, logger} from '../logger';
-import {Selector, cardPrice, pageIncludesLabels} from './includes-labels';
+import { Browser, Page, PageEventObj, Request, Response } from "puppeteer";
+import { Link, Store, getStores } from "./model";
+import { Print, logger } from "../logger";
+import { Selector, cardPrice, pageIncludesLabels } from "./includes-labels";
 import {
 	closePage,
 	delay,
 	getRandomUserAgent,
 	getSleepTime,
-	isStatusCodeInRange
-} from '../util';
-import {disableBlockerInPage, enableBlockerInPage} from '../adblocker';
-import {config} from '../config';
-import {fetchLinks} from './fetch-links';
-import {filterStoreLink} from './filter';
-import open from 'open';
-import {processBackoffDelay} from './model/helpers/backoff';
-import {sendNotification} from '../notification';
-import useProxy from 'puppeteer-page-proxy';
+	isStatusCodeInRange,
+} from "../util";
+import { disableBlockerInPage, enableBlockerInPage } from "../adblocker";
+import { config } from "../config";
+import { fetchLinks } from "./fetch-links";
+import { filterStoreLink } from "./filter";
+import open from "open";
+import { processBackoffDelay } from "./model/helpers/backoff";
+import { sendNotification } from "../notification";
+import useProxy from "puppeteer-page-proxy";
 
 const inStock: Record<string, boolean> = {};
 
@@ -43,13 +43,22 @@ function nextProxy(store: Store) {
 	return store.proxyList[store.currentProxyIndex];
 }
 
+const lowBandwithTypesIgnore = [
+	"font",
+	"image",
+	"png",
+	"jpeg",
+	"gif",
+	"stylesheet",
+	"svg+xml",
+];
 async function handleLowBandwidth(request: Request) {
 	if (!config.browser.lowBandwidth) {
 		return false;
 	}
 
-	const typ = request.resourceType();
-	if (typ === 'font' || typ === 'image') {
+	const reqType = request.resourceType() || "";
+	if (lowBandwithTypesIgnore.includes(reqType.toLocaleLowerCase())) {
 		try {
 			await request.abort();
 		} catch {}
@@ -97,16 +106,16 @@ async function handleAdBlock(request: Request, adBlockRequestHandler: any) {
 
 		const requestProxy = new Proxy(request, {
 			get(target, prop, receiver) {
-				if (prop === 'continue') {
+				if (prop === "continue") {
 					return continueFunc;
 				}
 
-				if (prop === 'abort') {
+				if (prop === "abort") {
 					return abortFunc;
 				}
 
 				return Reflect.get(target, prop, receiver);
-			}
+			},
 		});
 		adBlockRequestHandler(requestProxy);
 	});
@@ -167,7 +176,7 @@ async function lookup(browser: Browser, store: Store) {
 		let pageProxy;
 		if (useAdBlock) {
 			const onProxyFunc = (event: keyof PageEventObj, handler: any) => {
-				if (event !== 'request') {
+				if (event !== "request") {
 					page.on(event, handler);
 					return;
 				}
@@ -177,18 +186,18 @@ async function lookup(browser: Browser, store: Store) {
 
 			pageProxy = new Proxy(page, {
 				get(target, prop, receiver) {
-					if (prop === 'on') {
+					if (prop === "on") {
 						return onProxyFunc;
 					}
 
 					return Reflect.get(target, prop, receiver);
-				}
+				},
 			});
 			await enableBlockerInPage(pageProxy);
 		}
 
 		await page.setRequestInterception(true);
-		page.on('request', async (request) => {
+		page.on("request", async (request) => {
 			if (await handleLowBandwidth(request)) {
 				return;
 			}
@@ -217,7 +226,7 @@ async function lookup(browser: Browser, store: Store) {
 				}`
 			);
 			const client = await page.target().createCDPSession();
-			await client.send('Network.clearBrowserCookies');
+			await client.send("Network.clearBrowserCookies");
 			// Await client.send('Network.clearBrowserCache');
 		}
 
@@ -243,9 +252,9 @@ async function lookupCard(
 	page: Page,
 	link: Link
 ): Promise<number> {
-	const givenWaitFor = store.waitUntil ? store.waitUntil : 'networkidle0';
+	const givenWaitFor = store.waitUntil ? store.waitUntil : "networkidle0";
 	const response: Response | null = await page.goto(link.url, {
-		waitUntil: givenWaitFor
+		waitUntil: givenWaitFor,
 	});
 
 	if (!response) {
@@ -286,10 +295,10 @@ async function lookupCard(
 		}
 
 		if (config.page.screenshot) {
-			logger.debug('ℹ saving screenshot');
+			logger.debug("ℹ saving screenshot");
 
 			link.screenshot = `success-${Date.now()}.png`;
-			await page.screenshot({path: link.screenshot});
+			await page.screenshot({ path: link.screenshot });
 		}
 	}
 
@@ -299,15 +308,15 @@ async function lookupCard(
 async function lookupCardInStock(store: Store, page: Page, link: Link) {
 	const baseOptions: Selector = {
 		requireVisible: false,
-		selector: store.labels.container ?? 'body',
-		type: 'textContent'
+		selector: store.labels.container ?? "body",
+		type: "textContent",
 	};
 
 	if (store.labels.inStock) {
 		const options = {
 			...baseOptions,
 			requireVisible: true,
-			type: 'outerHTML' as const
+			type: "outerHTML" as const,
 		};
 
 		if (!(await pageIncludesLabels(page, store.labels.inStock, options))) {
