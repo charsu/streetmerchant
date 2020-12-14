@@ -1,73 +1,119 @@
-import {Link, Store} from './store';
-import {logger} from '../../logger';
-import {parseCard} from './helpers/card';
+import { Link, Store } from "./store";
+import { Browser, Page } from "puppeteer";
+import { parseCard } from "./helpers/card";
+import {envOrString} from "../../config";
+import {Print, logger} from '../../logger';
+
+const buyNow = async (browser: Browser, page: Page) => {
+	logger.info("auto-buying amazon-uk: started");
+
+	// click the buy now
+	await page.click("#buy-now-button");
+
+	await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+	var url = page.url();
+	if(url.includes('signin')){
+		await login(browser,page);
+	}
+
+	// click buy
+	await page.click("#submitOrderButtonId");
+	await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+	logger.info("auto-buying amazon-uk: successful");
+
+	return "";
+};
+
+const login = async (browser: Browser, page: Page) => {
+	logger.info("login amazon-uk: started");
+	
+	// username 
+	await page.type('#ap_email ', envOrString(process.env.AMAZONUK_USERNAME));
+	await page.click("#continue");
+
+	await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+	// password 
+	await page.type('#ap_password ', envOrString(process.env.AMAZONUK_PASSWORD));
+	await page.click('input[name="rememberMe"]');
+	await page.click("#signInSubmit");
+
+	await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+	logger.info("login amazon-uk: successful");
+}
 
 export const AmazonUk: Store = {
 	backoffStatusCodes: [403, 429, 503],
 	labels: {
 		captcha: {
-			container: 'body',
-			text: ['enter the characters you see below']
+			container: "body",
+			text: ["enter the characters you see below"],
 		},
 		inStock: {
-			container: '#availability',
-			text: ['in stock']
+			container: "#availability",
+			text: ["in stock"],
 		},
 		maxPrice: {
-			container: 'span[class*="priceBlockBuyingPriceString"]'
+			container: 'span[class*="priceBlockBuyingPriceString"]',
 		},
 		outOfStock: [
 			{
-				container: '#availability',
-				text: ['out of stock', 'unavailable']
+				container: "#availability",
+				text: ["out of stock", "unavailable"],
 			},
 			{
-				container: '#backInStock',
-				text: ['unavailable']
-			}
-		]
+				container: "#backInStock",
+				text: ["unavailable"],
+			},
+		],
 	},
 	links: [
 		{
-			brand: 'test:brand',
+			brand: "test:brand",
 			cartUrl:
-				'https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B085G58KWT&Quantity.1=1',
-			model: 'test:model',
-			series: 'test:series',
-			url: 'https://www.amazon.co.uk/all-new-echo-4th-generation-with-premium-sound-smart-home-hub-and-alexa-charcoal/dp/B085G58KWT'
+				"https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B085G58KWT&Quantity.1=1",
+			buyAction: buyNow,
+			model: "test:model",
+			series: "test:series",
+			url:
+				"https://www.amazon.co.uk/all-new-echo-4th-generation-with-premium-sound-smart-home-hub-and-alexa-charcoal/dp/B085G58KWT",
 		},
 		{
-			brand: 'sony',
+			brand: "sony",
 			cartUrl:
-				'https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B08H95Y452&Quantity.1=1',
-			model: 'ps5 console',
-			series: 'sonyps5c',
-			url: 'https://www.amazon.co.uk/dp/B08H95Y452'
+				"https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B08H95Y452&Quantity.1=1",
+			buyAction: buyNow,
+			model: "ps5 console",
+			series: "sonyps5c",
+			url: "https://www.amazon.co.uk/dp/B08H95Y452",
 		},
 		{
-			brand: 'sony',
+			brand: "sony",
 			cartUrl:
-				'https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B08H97NYGP&Quantity.1=1',
-			model: 'ps5 digital',
-			series: 'sonyps5de',
-			url: 'https://www.amazon.co.uk/dp/B08H97NYGP'
+				"https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B08H97NYGP&Quantity.1=1",
+			model: "ps5 digital",
+			series: "sonyps5de",
+			url: "https://www.amazon.co.uk/dp/B08H97NYGP",
 		},
 		{
-			brand: 'microsoft',
+			brand: "microsoft",
 			cartUrl:
-				'https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B08H93GKNJ&Quantity.1=1',
-			model: 'xbox series x',
-			series: 'xboxsx',
-			url: 'https://www.amazon.co.uk/dp/B08H93GKNJ'
+				"https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B08H93GKNJ&Quantity.1=1",
+			model: "xbox series x",
+			series: "xboxsx",
+			url: "https://www.amazon.co.uk/dp/B08H93GKNJ",
 		},
 		{
-			brand: 'microsoft',
+			brand: "microsoft",
 			cartUrl:
-				'https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B08GD9MNZB&Quantity.1=1',
-			model: 'xbox series s',
-			series: 'xboxss',
-			url: 'https://www.amazon.co.uk/dp/B08GD9MNZB'
-		}
+				"https://www.amazon.co.uk/gp/aws/cart/add.html?ASIN.1=B08GD9MNZB&Quantity.1=1",
+			model: "xbox series s",
+			series: "xboxss",
+			url: "https://www.amazon.co.uk/dp/B08GD9MNZB",
+		},
 	],
 	// linksBuilder: {
 	// 	builder: (docElement, series) => {
@@ -128,5 +174,5 @@ export const AmazonUk: Store = {
 	// 		}
 	// 	]
 	// },
-	name: 'amazon-uk'
+	name: "amazon-uk",
 };

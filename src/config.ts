@@ -50,7 +50,7 @@ function envOrBoolean(
  * @param environment Interested environment variable.
  * @param string Default string. If not set, is `''`.
  */
-function envOrString(environment: string | undefined, string?: string): string {
+export function envOrString(environment: string | undefined, string?: string): string {
 	return environment ? environment : string ?? '';
 }
 

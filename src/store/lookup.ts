@@ -49,7 +49,7 @@ const lowBandwithTypesIgnore = [
 	"png",
 	"jpeg",
 	"gif",
-	"stylesheet",
+	// "stylesheet",
 	"svg+xml",
 ];
 async function handleLowBandwidth(request: Request) {
@@ -286,6 +286,11 @@ async function lookupCard(
 
 		sendNotification(link, store);
 
+		if (link.buyAction) {
+			await saveScreenshot(page, link);
+			await link.buyAction(browser, page);
+		}
+
 		if (config.page.inStockWaitTime) {
 			inStock[link.url] = true;
 
@@ -294,16 +299,20 @@ async function lookupCard(
 			}, 1000 * config.page.inStockWaitTime);
 		}
 
-		if (config.page.screenshot) {
-			logger.debug("ℹ saving screenshot");
-
-			link.screenshot = `success-${Date.now()}.png`;
-			await page.screenshot({ path: link.screenshot });
-		}
+		await saveScreenshot(page, link);
 	}
 
 	return statusCode;
 }
+
+const saveScreenshot = async (page: Page, link: Link) => {
+	if (config.page.screenshot) {
+		logger.debug("ℹ saving screenshot");
+
+		link.screenshot = `success-${Date.now()}.png`;
+		await page.screenshot({ path: link.screenshot });
+	}
+};
 
 async function lookupCardInStock(store: Store, page: Page, link: Link) {
 	const baseOptions: Selector = {
