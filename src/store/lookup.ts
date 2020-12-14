@@ -49,7 +49,7 @@ const lowBandwithTypesIgnore = [
 	"png",
 	"jpeg",
 	"gif",
-	// "stylesheet",
+	"stylesheet",
 	"svg+xml",
 ];
 async function handleLowBandwidth(request: Request) {
