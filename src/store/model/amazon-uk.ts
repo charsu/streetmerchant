@@ -3,6 +3,7 @@ import { Browser, Page } from "puppeteer";
 import { parseCard } from "./helpers/card";
 import { envOrString } from "../../config";
 import { Print, logger } from "../../logger";
+import { getRandomUserAgent } from "../../util";
 
 const buyNow = async (browser: Browser, page: Page, buyUrl?: string) => {
 	logger.info("auto-buying amazon-uk: started");
@@ -88,6 +89,7 @@ export const AmazonUk: Store = {
 	},
 	setupLogin: async (brwsr) => {
 		const page = await brwsr.newPage();
+		await page.setUserAgent(getRandomUserAgent());
 
 		await page.goto("https://www.amazon.co.uk/", {
 			waitUntil: "domcontentloaded",

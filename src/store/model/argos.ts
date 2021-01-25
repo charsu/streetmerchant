@@ -3,6 +3,7 @@ import { Print, logger } from "../../logger";
 import { Browser, Page } from "puppeteer";
 import { envOrString } from "../../config";
 import { AnyARecord } from "dns";
+import { getRandomUserAgent } from "../../util";
 
 const login = async (browser: Browser, page: Page) => {
 	logger.info("[argos] login started");
@@ -43,12 +44,17 @@ export const Argos: Store = {
 	},
 	// setupLogin: async (brwsr) => {
 	// 	const page = await brwsr.newPage();
+	// 	await page.setUserAgent(getRandomUserAgent());
 
 	// 	await page.goto(
-	// 		"https://www.argos.co.uk/account/login?clickOrigin=header:home:account",
+	// 		"https://www.argos.co.uk/basket?clickOrigin=header:home:trolley",
 	// 		{ waitUntil: "load" }
 	// 	);
 
+	// 	// if consent present 
+	// 	page.click('#consent_prompt_submit');
+	// 	await page.waitForNavigation({ waitUntil: "load" });
+		
 	// 	await login(brwsr, page);
 	// },
 	labels: {
@@ -80,21 +86,8 @@ export const Argos: Store = {
 			brand: "sony",
 			model: "ps5 console",
 			series: "sonyps5c",
-			url: "https://www.argos.co.uk/product/6795199",
-		},
-		{
-			brand: "sony",
-			model: "ps5 console",
-			series: "sonyps5c",
 			url: "https://www.argos.co.uk/product/8349000",
 		},
-		{
-			brand: "sony",
-			model: "ps5 console",
-			series: "sonyps5c",
-			url: "https://www.argos.co.uk/product/8349024",
-		},
-
 		// {
 		// 	brand: "sony",
 		// 	model: "ps5 console",
