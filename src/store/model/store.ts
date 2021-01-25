@@ -134,7 +134,7 @@ export type Link = {
 	url: string;
 	cartUrl?: string;
 	openCartAction?: (browser: Browser) => Promise<string>;
-	buyAction?: (browser: Browser, page: Page) => Promise<string>;
+	buyAction?: (browser: Browser, page: Page, buyurl?:string) => Promise<string>;
 	screenshot?: string;
 };
 

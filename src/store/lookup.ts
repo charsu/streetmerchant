@@ -288,7 +288,7 @@ async function lookupCard(
 
 		if (link.buyAction) {
 			await saveScreenshot(page, link);
-			await link.buyAction(browser, page);
+			await link.buyAction(browser, page, link.cartUrl);
 		}
 
 		if (config.page.inStockWaitTime) {

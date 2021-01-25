@@ -3,9 +3,12 @@ Description=StreetMerchant Service
 After=network-online.target
 
 [Service]
+#Type=notify
+#WatchdogSec=5400
+RuntimeMaxSec=120
 WorkingDirectory=/home/pi/streetmerchant
 ExecStart=/home/pi/.nvm/versions/node/v15.3.0/bin/npm run start:production
-Restart=on-failure
+Restart=always
 User=pi
 Environment=PORT=9099
 

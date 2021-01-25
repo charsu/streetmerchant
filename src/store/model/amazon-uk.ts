@@ -1,25 +1,41 @@
 import { Link, Store } from "./store";
 import { Browser, Page } from "puppeteer";
 import { parseCard } from "./helpers/card";
-import {envOrString} from "../../config";
-import {Print, logger} from '../../logger';
+import { envOrString } from "../../config";
+import { Print, logger } from "../../logger";
 
-const buyNow = async (browser: Browser, page: Page) => {
+const buyNow = async (browser: Browser, page: Page, buyUrl?: string) => {
 	logger.info("auto-buying amazon-uk: started");
 
-	// click the buy now
-	await page.click("#buy-now-button");
+	if (buyUrl == null) {
+		// click the buy now
+		await page.click("#buy-now-button");
+		await page.waitForNavigation({ waitUntil: "networkidle0" });
+	} else {
+		//try to access the add to cart url
+		logger.info("auto-buying amazon-uk: accessing add to cart url");
+		await page.goto(buyUrl, { waitUntil: "domcontentloaded" });
 
-	await page.waitForNavigation({ waitUntil: 'networkidle0' });
+		// push continue
+		logger.info("auto-buying amazon-uk: confirm add to basket");
+		await page.click('input[name="add"]');
+		await page.waitForNavigation({ waitUntil: "domcontentloaded" });
+
+		// push checkout
+		logger.info("auto-buying amazon-uk: proceed to checkout");
+		await page.click('input[name="proceedToRetailCheckout"]');
+		await page.waitForNavigation({waitUntil: 'domcontentloaded'});
+	}
 
 	var url = page.url();
-	if(url.includes('signin')){
-		await login(browser,page);
+	if (url.includes("signin")) {
+		await login(browser, page);
 	}
 
 	// click buy
+	logger.info("auto-buying amazon-uk: submit order");
 	await page.click("#submitOrderButtonId");
-	await page.waitForNavigation({ waitUntil: 'networkidle0' });
+	await page.waitForNavigation({ waitUntil: "networkidle0" });
 
 	logger.info("auto-buying amazon-uk: successful");
 
@@ -28,22 +44,22 @@ const buyNow = async (browser: Browser, page: Page) => {
 
 const login = async (browser: Browser, page: Page) => {
 	logger.info("login amazon-uk: started");
-	
-	// username 
-	await page.type('#ap_email ', envOrString(process.env.AMAZONUK_USERNAME));
+
+	// username
+	await page.type("#ap_email ", envOrString(process.env.AMAZONUK_USERNAME));
 	await page.click("#continue");
 
-	await page.waitForNavigation({ waitUntil: 'networkidle0' });
+	await page.waitForNavigation({waitUntil: 'domcontentloaded'});
 
-	// password 
-	await page.type('#ap_password ', envOrString(process.env.AMAZONUK_PASSWORD));
+	// password
+	await page.type("#ap_password ", envOrString(process.env.AMAZONUK_PASSWORD));
 	await page.click('input[name="rememberMe"]');
 	await page.click("#signInSubmit");
 
-	await page.waitForNavigation({ waitUntil: 'networkidle0' });
+	await page.waitForNavigation({waitUntil: 'domcontentloaded'});
 
 	logger.info("login amazon-uk: successful");
-}
+};
 
 export const AmazonUk: Store = {
 	backoffStatusCodes: [403, 429, 503],
