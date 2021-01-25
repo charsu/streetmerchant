@@ -1,7 +1,8 @@
-import {Link, Store} from '..';
-import {Print, logger} from '../../../logger';
-import {delay, isStatusCodeInRange} from '../../../util';
-import {config} from '../../../config';
+import { Link, Store } from "..";
+import { Print, logger } from "../../../logger";
+import { delay, isStatusCodeInRange } from "../../../util";
+import { config } from "../../../config";
+import { Page } from "puppeteer";
 
 type Backoff = {
 	count: number;
@@ -11,6 +12,7 @@ type Backoff = {
 const stores: Record<string, Backoff> = {};
 
 export async function processBackoffDelay(
+	page: Page,
 	store: Store,
 	link: Link,
 	statusCode: number
@@ -31,7 +33,7 @@ export async function processBackoffDelay(
 	let backoff = stores[store.name];
 
 	if (!backoff) {
-		backoff = {count: 0, time: config.browser.minBackoff};
+		backoff = { count: 0, time: config.browser.minBackoff };
 		stores[store.name] = backoff;
 	}
 
@@ -44,9 +46,13 @@ export async function processBackoffDelay(
 		return -1;
 	}
 
+	if (store.backoffAction) {
+		return await store.backoffAction(page, statusCode);
+	}
+
 	const backoffTime = backoff.time;
 	logger.debug(
-		Print.backoff(link, store, {delay: backoffTime, statusCode}, true)
+		Print.backoff(link, store, { delay: backoffTime, statusCode }, true)
 	);
 
 	await delay(backoff.time);

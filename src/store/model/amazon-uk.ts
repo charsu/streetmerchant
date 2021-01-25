@@ -24,7 +24,7 @@ const buyNow = async (browser: Browser, page: Page, buyUrl?: string) => {
 		// push checkout
 		logger.info("auto-buying amazon-uk: proceed to checkout");
 		await page.click('input[name="proceedToRetailCheckout"]');
-		await page.waitForNavigation({waitUntil: 'domcontentloaded'});
+		await page.waitForNavigation({ waitUntil: "domcontentloaded" });
 	}
 
 	var url = page.url();
@@ -43,22 +43,22 @@ const buyNow = async (browser: Browser, page: Page, buyUrl?: string) => {
 };
 
 const login = async (browser: Browser, page: Page) => {
-	logger.info("login amazon-uk: started");
+	logger.info("[amazon-uk] login amazon-uk: started");
 
 	// username
 	await page.type("#ap_email ", envOrString(process.env.AMAZONUK_USERNAME));
 	await page.click("#continue");
 
-	await page.waitForNavigation({waitUntil: 'domcontentloaded'});
+	await page.waitForNavigation({ waitUntil: "domcontentloaded" });
 
 	// password
 	await page.type("#ap_password ", envOrString(process.env.AMAZONUK_PASSWORD));
 	await page.click('input[name="rememberMe"]');
 	await page.click("#signInSubmit");
 
-	await page.waitForNavigation({waitUntil: 'domcontentloaded'});
+	await page.waitForNavigation({ waitUntil: "domcontentloaded" });
 
-	logger.info("login amazon-uk: successful");
+	logger.info("[amazon-uk] login successful");
 };
 
 export const AmazonUk: Store = {
@@ -85,6 +85,21 @@ export const AmazonUk: Store = {
 				text: ["unavailable"],
 			},
 		],
+	},
+	setupLogin: async (brwsr) => {
+		const page = await brwsr.newPage();
+
+		await page.goto("https://www.amazon.co.uk/", {
+			waitUntil: "domcontentloaded",
+		});
+		// await page.click("#nav-link-accountList").then(async () => {
+		// 	await page.waitForNavigation({ waitUntil: "domcontentloaded" });
+		// 	await login(brwsr, page);
+		// });
+		page.click("#nav-link-accountList");
+
+		await page.waitForNavigation({ waitUntil: "domcontentloaded" });
+		await login(brwsr, page);
 	},
 	links: [
 		{

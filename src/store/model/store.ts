@@ -134,7 +134,11 @@ export type Link = {
 	url: string;
 	cartUrl?: string;
 	openCartAction?: (browser: Browser) => Promise<string>;
-	buyAction?: (browser: Browser, page: Page, buyurl?:string) => Promise<string>;
+	buyAction?: (
+		browser: Browser,
+		page: Page,
+		buyurl?: string
+	) => Promise<string>;
 	screenshot?: string;
 };
 
@@ -159,6 +163,7 @@ export type Store = {
 	 * If not defined, the default range will be used: 403.
 	 */
 	backoffStatusCodes?: StatusCodeRangeArray;
+	backoffAction?: (page: Page, statusCode: number) => Promise<number>;
 	disableAdBlocker?: boolean;
 	links: Link[];
 	linksBuilder?: {
@@ -169,6 +174,7 @@ export type Store = {
 	labels: Labels;
 	name: string;
 	setupAction?: (browser: Browser) => void;
+	setupLogin?: (browser: Browser) => Promise<void>;
 	/**
 	 * The range of status codes which considered successful, i.e. without error
 	 * allowing request parsing to continue. Setting an empty array will cause

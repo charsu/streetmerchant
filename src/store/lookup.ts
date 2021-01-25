@@ -237,7 +237,7 @@ async function lookup(browser: Browser, store: Store) {
 		// Must apply backoff before closing the page, e.g. if CloudFlare is
 		// used to detect bot traffic, it introduces a 5 second page delay
 		// before redirecting to the next page
-		await processBackoffDelay(store, link, statusCode);
+		await processBackoffDelay(page, store, link, statusCode);
 		await closePage(page);
 		if (customContext) {
 			await context.close();

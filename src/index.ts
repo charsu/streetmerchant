@@ -1,12 +1,12 @@
-import {startAPIServer, stopAPIServer} from './web';
-import {Browser} from 'puppeteer';
-import {config} from './config';
-import {getSleepTime} from './util';
-import {logger} from './logger';
-import puppeteer from 'puppeteer-extra';
-import stealthPlugin from 'puppeteer-extra-plugin-stealth';
-import {storeList} from './store/model';
-import {tryLookupAndLoop} from './store';
+import { startAPIServer, stopAPIServer } from "./web";
+import { Browser } from "puppeteer";
+import { config } from "./config";
+import { getSleepTime } from "./util";
+import { logger } from "./logger";
+import puppeteer from "puppeteer-extra";
+import stealthPlugin from "puppeteer-extra-plugin-stealth";
+import { storeList } from "./store/model";
+import { tryLookupAndLoop } from "./store";
 
 puppeteer.use(stealthPlugin());
 
@@ -21,13 +21,13 @@ async function main() {
 	// Skip Chromium Linux Sandbox
 	// https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#setting-up-chrome-linux-sandbox
 	if (config.browser.isTrusted) {
-		args.push('--no-sandbox');
-		args.push('--disable-setuid-sandbox');
+		args.push("--no-sandbox");
+		args.push("--disable-setuid-sandbox");
 	}
 
 	// https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#tips
 	if (config.docker) {
-		args.push('--disable-dev-shm-usage');
+		args.push("--disable-dev-shm-usage");
 	}
 
 	// Add the address of the proxy server if defined
@@ -43,16 +43,20 @@ async function main() {
 		args,
 		defaultViewport: {
 			height: config.page.height,
-			width: config.page.width
+			width: config.page.width,
 		},
-		executablePath: config.raspberrypi ? 'chromium-browser' : '', 
-		headless: config.browser.isHeadless
+		executablePath: config.raspberrypi ? "chromium-browser" : "",
+		headless: config.browser.isHeadless,
 	});
 
 	for (const store of storeList.values()) {
-		logger.debug('store links', {meta: {links: store.links}});
+		logger.debug("store links", { meta: { links: store.links } });
 		if (store.setupAction !== undefined) {
 			store.setupAction(browser);
+		}
+
+		if (store.setupLogin !== undefined) {
+			await store.setupLogin(browser);
 		}
 
 		setTimeout(tryLookupAndLoop, getSleepTime(store), browser, store);
@@ -86,7 +90,7 @@ async function loopMain() {
 		await main();
 	} catch (error: unknown) {
 		logger.error(
-			'✖ something bad happened, resetting streetmerchant in 5 seconds',
+			"✖ something bad happened, resetting streetmerchant in 5 seconds",
 			error
 		);
 		setTimeout(loopMain, 5000);
@@ -95,6 +99,6 @@ async function loopMain() {
 
 void loopMain();
 
-process.on('SIGINT', stopAndExit);
-process.on('SIGQUIT', stopAndExit);
-process.on('SIGTERM', stopAndExit);
+process.on("SIGINT", stopAndExit);
+process.on("SIGQUIT", stopAndExit);
+process.on("SIGTERM", stopAndExit);
