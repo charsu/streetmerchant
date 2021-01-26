@@ -2,11 +2,37 @@ import { Store } from "./store";
 import { Print, logger } from "../../logger";
 import { Browser, Page } from "puppeteer";
 import { envOrString } from "../../config";
-import { AnyARecord } from "dns";
 import { getRandomUserAgent } from "../../util";
 
+const openBasketAndBuy = async (
+	browser: Browser,
+	page: Page,
+	buyUrl?: string
+) => {
+
+	logger.info("[argos] opening basket and login ...");
+
+	await page.goto(
+		"https://www.argos.co.uk/account/login?clickOrigin=header:trolley:account",
+		{ waitUntil: "load" }
+	);
+
+	// if consent present
+	const consentvisible = await page.evaluate(() => {
+		return document.querySelector("#consent_prompt_submit") != null;
+	});
+
+	if (consentvisible) {
+		await page.click("#consent_prompt_submit");
+		// await page.waitForNavigation({ waitUntil: "load" });
+	}
+
+	await login(browser, page);
+	return await buyNow(browser, page, buyUrl);
+};
+
 const buyNow = async (browser: Browser, page: Page, buyUrl?: string) => {
-	logger.info("[argos] auto-buying started");
+	logger.info("[argos] buy started");
 
 	// go to basket
 	await page.goto("https://www.argos.co.uk/basket", { waitUntil: "load" });
@@ -190,27 +216,27 @@ export const Argos: Store = {
 		}
 		return -1;
 	},
-	setupLogin: async (brwsr) => {
-		const page = await brwsr.newPage();
-		await page.setUserAgent(getRandomUserAgent());
+	// setupLogin: async (brwsr) => {
+	// 	const page = await brwsr.newPage();
+	// 	await page.setUserAgent(getRandomUserAgent());
 
-		await page.goto(
-			"https://www.argos.co.uk/account/login?clickOrigin=header:home:account",
-			{ waitUntil: "load" }
-		);
+	// 	await page.goto(
+	// 		"https://www.argos.co.uk/account/login?clickOrigin=header:home:account",
+	// 		{ waitUntil: "load" }
+	// 	);
 
-		// if consent present
-		const consentvisible = await page.evaluate(() => {
-			return document.querySelector("#consent_prompt_submit") != null;
-		});
+	// 	// if consent present
+	// 	const consentvisible = await page.evaluate(() => {
+	// 		return document.querySelector("#consent_prompt_submit") != null;
+	// 	});
 
-		if (consentvisible) {
-			await page.click("#consent_prompt_submit");
-			// await page.waitForNavigation({ waitUntil: "load" });
-		}
+	// 	if (consentvisible) {
+	// 		await page.click("#consent_prompt_submit");
+	// 		// await page.waitForNavigation({ waitUntil: "load" });
+	// 	}
 
-		await login(brwsr, page);
-	},
+	// 	await login(brwsr, page);
+	// },
 	labels: {
 		inStock: [
 			{
@@ -226,7 +252,7 @@ export const Argos: Store = {
 			{
 				container: ".promo-text,product-detail__email-me-container",
 				text: ["currently unavailable", "Out of stock"],
-			}
+			},
 		],
 	},
 
@@ -236,14 +262,14 @@ export const Argos: Store = {
 			model: "test:model",
 			series: "test:series",
 			url: "https://www.argos.co.uk/product/1406029",
-			buyAction: buyNow,
+			buyAction: openBasketAndBuy,
 		},
 		{
 			brand: "sony",
 			model: "ps5 console",
 			series: "sonyps5c",
 			url: "https://www.argos.co.uk/product/8349000",
-			buyAction: buyNow,
+			buyAction: openBasketAndBuy,
 		},
 		{
 			brand: "sony",
@@ -251,7 +277,7 @@ export const Argos: Store = {
 			series: "sonyps5c",
 			url:
 				"https://www.argos.co.uk/basket?clickOrigin=header:myaccount:trolley",
-			buyAction: buyNow,
+			buyAction: openBasketAndBuy,
 		},
 	],
 	name: "argos",
