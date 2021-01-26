@@ -6,7 +6,7 @@ import { Print, logger } from "../../logger";
 import { getRandomUserAgent } from "../../util";
 
 const buyNow = async (browser: Browser, page: Page, buyUrl?: string) => {
-	logger.info("auto-buying amazon-uk: started");
+	logger.info("[amazon-uk]auto-buying amazon-uk: started");
 
 	if (buyUrl == null) {
 		// click the buy now
@@ -38,7 +38,7 @@ const buyNow = async (browser: Browser, page: Page, buyUrl?: string) => {
 	await page.click("#submitOrderButtonId");
 	await page.waitForNavigation({ waitUntil: "networkidle0" });
 
-	logger.info("auto-buying amazon-uk: successful");
+	logger.info("[amazon-uk] auto-buying successful");
 
 	return "";
 };

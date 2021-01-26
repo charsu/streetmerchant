@@ -5,7 +5,7 @@ import { getSleepTime } from "./util";
 import { logger } from "./logger";
 import puppeteer from "puppeteer-extra";
 import stealthPlugin from "puppeteer-extra-plugin-stealth";
-import { storeList } from "./store/model";
+import { storeList, getStores } from "./store/model";
 import { tryLookupAndLoop } from "./store";
 
 puppeteer.use(stealthPlugin());
@@ -17,6 +17,10 @@ let browser: Browser | undefined;
  */
 async function main() {
 	const args: string[] = [];
+
+	// required to access iframes
+	args.push('--disable-web-security');
+	args.push('--disable-features=IsolateOrigins,site-per-process');
 
 	// Skip Chromium Linux Sandbox
 	// https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#setting-up-chrome-linux-sandbox
@@ -49,13 +53,14 @@ async function main() {
 		headless: config.browser.isHeadless,
 	});
 
+	const activeStores = getStores();
 	for (const store of storeList.values()) {
 		logger.debug("store links", { meta: { links: store.links } });
 		if (store.setupAction !== undefined) {
 			store.setupAction(browser);
 		}
 
-		if (store.setupLogin !== undefined) {
+		if (activeStores.has(store.name) && store.setupLogin !== undefined) {
 			await store.setupLogin(browser);
 		}
 
