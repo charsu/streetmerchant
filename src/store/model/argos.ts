@@ -271,14 +271,14 @@ export const Argos: Store = {
 			url: "https://www.argos.co.uk/product/8349000",
 			buyAction: openBasketAndBuy,
 		},
-		{
-			brand: "sony",
-			model: "ps5 console",
-			series: "sonyps5c",
-			url:
-				"https://www.argos.co.uk/basket?clickOrigin=header:myaccount:trolley",
-			buyAction: openBasketAndBuy,
-		},
+		// {
+		// 	brand: "sony",
+		// 	model: "ps5 console",
+		// 	series: "sonyps5c",
+		// 	url:
+		// 		"https://www.argos.co.uk/basket?clickOrigin=header:myaccount:trolley",
+		// 	buyAction: openBasketAndBuy,
+		// },
 	],
 	name: "argos",
 };

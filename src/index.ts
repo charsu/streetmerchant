@@ -60,7 +60,7 @@ async function main() {
 			store.setupAction(browser);
 		}
 
-		if (activeStores.has(store.name) && store.setupLogin !== undefined) {
+		if (activeStores.has(store.name) && store.setupLogin) {
 			await store.setupLogin(browser);
 		}
 
